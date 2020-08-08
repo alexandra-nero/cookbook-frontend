@@ -2,6 +2,12 @@
 
 ## Requirements:
 
+Main Page:
+![Main Page](/main-page.png)
+
+Create/Edit a Recipe:
+![Edit Page](/edit-page.png)
+
 ### React App
 
 `npm install axios`
