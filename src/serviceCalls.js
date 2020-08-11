@@ -11,7 +11,7 @@ export const createRecipe = async (recipe) => {
 };
 
 export const getRecipes = async () =>{
-  const response = await axios.get("http://ec2-54-145-81-149.compute-1.amazonaws.com:8080/api/recipes");
+  const response = await axios.get(endpoint + "/api/recipes");
   return response.data
 };
 
