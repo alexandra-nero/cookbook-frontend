@@ -2,3 +2,4 @@ server/server.exe
 ./node_modules
 server/config.json
 node_modules
+build
