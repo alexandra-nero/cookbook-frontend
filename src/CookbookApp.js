@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Header, Segment, Icon, Container, Message, Transition } from "semantic-ui-react";
+import { Icon, Message, Transition, Menu } from "semantic-ui-react";
 import ViewRecipes from "./view/ViewRecipes";
 import EditRecipe from "./edit/EditRecipe";
+import "./stylesheets/index.css";
 
 function CookbookApp() {
   const [showEditPage, setShowEditPage] = useState(false);
@@ -47,13 +48,17 @@ function CookbookApp() {
   }
 
   return (
-    <Container fluid>
-      <Segment inverted color="orange">
-        <Header as="h1">
-          <Icon name="food" />
-          Cookbook
-        </Header>
-      </Segment>
+    <>
+      <Menu pointing secondary size="massive" className="menuStyle">
+        <Menu.Item 
+          onClick={()=>setShowEditPage(false)}>
+          <div
+          className="headerTitleStyle">
+            <Icon name="food" size="small"/>
+            Cookbook
+          </div>
+        </Menu.Item>
+      </Menu>
       <Transition visible={creationSuccess} animation="scale" duration={500}>
         <Message
           onDismiss={() => setCreationSuccess(false)}
@@ -92,7 +97,7 @@ function CookbookApp() {
             onEditRecipe={handleSelectEditRecipe}
           />
         )}
-    </Container>
+    </>
   );
 }
 export default CookbookApp;
