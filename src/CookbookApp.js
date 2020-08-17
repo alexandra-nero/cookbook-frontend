@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Icon, Message, Transition, Menu } from "semantic-ui-react";
+import { Icon, Menu, Loader } from "semantic-ui-react";
 import ViewRecipes from "./view/ViewRecipes";
 import EditRecipe from "./edit/EditRecipe";
 import "./stylesheets/index.css";
+import MessageBar from "./MessageBar";
 
 function CookbookApp() {
   const [showEditPage, setShowEditPage] = useState(false);
@@ -13,6 +14,7 @@ function CookbookApp() {
   const [newRecipeName, setNewRecipeName] = useState("");
   const [deletedRecipeName, setDeletedRecipeName] = useState("");
   const [editedRecipeName, setEditedRecipeName] = useState("");
+
   const [recipeToEdit, setRecipeToEdit] = useState(defaultRecipe);
 
   useEffect(() => {
@@ -50,53 +52,43 @@ function CookbookApp() {
   return (
     <>
       <Menu pointing secondary size="massive" className="menuStyle">
-        <Menu.Item 
-          onClick={()=>setShowEditPage(false)}>
+        <Menu.Item
+          onClick={() => setShowEditPage(false)}>
           <div
-          className="headerTitleStyle">
-            <Icon name="food" size="small"/>
+            className="headerTitleStyle">
+            <Icon name="food" size="small" />
             Cookbook
           </div>
         </Menu.Item>
       </Menu>
-      <Transition visible={creationSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setCreationSuccess(false)}
-          header="Recipe created!"
-          content={`Recipe, "${newRecipeName}", has been added to the database`}
-        />
-      </Transition>
-      <Transition visible={deletionSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setDeletionSuccess(false)}
-          header="Recipe deleted!"
-          content={`Recipe, "${deletedRecipeName}", has been removed from the database`}
-        />
-      </Transition>
-      <Transition visible={editSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setEditSuccess(false)}
-          header="Recipe edited!"
-          content={`Recipe, "${editedRecipeName}", has been edited in the database`}
-        />
-      </Transition>
-      {showEditPage ? (
-        <EditRecipe
-          onBackToMyRecipes={() => setShowEditPage(false)}
-          onSuccessfulCreate={(name) => handleCreateRecipe(name)}
-          onSuccessfulEdit={(name) => handleSuccessfulEditRecipe(name)}
-          inputtedRecipe={recipeToEdit}
-        />
-      ) : (
-          <ViewRecipes
-            onCreateRecipe={() => {
-              setShowEditPage(true);
-              setRecipeToEdit(defaultRecipe);
-            }}
-            onSuccessfulDelete={(name) => handleDeleteRecipe(name)}
-            onEditRecipe={handleSelectEditRecipe}
+      <MessageBar
+        creationSuccess={creationSuccess}
+        newRecipeName={newRecipeName}
+        setCreationSuccess={setCreationSuccess}
+        deletionSuccess={deletionSuccess}
+        deletedRecipeName={deletedRecipeName}
+        setDeletionSuccess={setDeletionSuccess}
+        editSuccess={editSuccess}
+        editedRecipeName={editedRecipeName}
+        setEditSuccess={setEditSuccess}
+      />
+        {showEditPage ? (
+          <EditRecipe
+            onBackToMyRecipes={() => setShowEditPage(false)}
+            onSuccessfulCreate={(name) => handleCreateRecipe(name)}
+            onSuccessfulEdit={(name) => handleSuccessfulEditRecipe(name)}
+            inputtedRecipe={recipeToEdit}
           />
-        )}
+        ) : (
+            <ViewRecipes
+              onCreateRecipe={() => {
+                setShowEditPage(true);
+                setRecipeToEdit(defaultRecipe);
+              }}
+              onSuccessfulDelete={(name) => handleDeleteRecipe(name)}
+              onEditRecipe={handleSelectEditRecipe}
+            />
+          )}
     </>
   );
 }
