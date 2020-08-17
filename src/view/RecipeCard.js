@@ -5,9 +5,9 @@ import { deleteRecipe, updateRecipe } from "../serviceCalls";
 function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
 
   const {
-    recipename: recipeName,
-    cooktime: cookTime,
-    preptime: prepTime,
+    recipeName,
+    cookTime,
+    prepTime,
     author,
     calories,
     _id: recipeId,
@@ -31,7 +31,7 @@ function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
 
   const onSelectStar = async (event) => {
     const idValueArray = event.target.id.split('-');
-    const submittedRating = parseInt(idValueArray[2]);
+    const submittedRating = Number(idValueArray[2]);
     const tempRecipe = { ...recipe, rating: submittedRating }
     await updateRecipe(recipeId, tempRecipe);
     setCurrentRating(submittedRating);

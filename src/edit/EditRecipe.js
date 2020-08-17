@@ -5,13 +5,13 @@ import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
 
 function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, inputtedRecipe }) {
-  const [recipeName, setRecipeName] = useState(inputtedRecipe.recipename);
+  const [recipeName, setRecipeName] = useState(inputtedRecipe.recipeName);
   const [author, setAuthor] = useState(inputtedRecipe.author);
   const [calories, setCalories] = useState(inputtedRecipe.calories);
   const [steps, setSteps] = useState(inputtedRecipe.steps.map(step => step.text));
   const [ingredients, setIngredients] = useState(inputtedRecipe.ingredients);
-  const [cookTime, setCookTime] = useState(inputtedRecipe.cooktime);
-  const [prepTime, setPrepTime] = useState(inputtedRecipe.preptime);
+  const [cookTime, setCookTime] = useState(inputtedRecipe.cookTime);
+  const [prepTime, setPrepTime] = useState(inputtedRecipe.prepTime);
   const [servings, setServings] = useState(inputtedRecipe.servings);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -34,11 +34,11 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
     }
     const submittedReport = {
       ...inputtedRecipe,
-      recipename: recipeName,
+      recipeName,
       author,
       calories,
-      cooktime: cookTime,
-      preptime: prepTime,
+      cookTime,
+      prepTime,
       servings,
       ingredients: submittedIngredients,
       steps: submittedSteps,
@@ -120,7 +120,7 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
                           type="number"
                           placeholder="kCal/serving"
                           defaultValue={calories}
-                          onChange={(event) => setCalories(parseInt(event.target.value))}
+                          onChange={(event) => setCalories(Number(event.target.value))}
                         />
                       </Form.Field>
                     </Grid.Column>
@@ -133,7 +133,7 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
                           type="number"
                           defaultValue={prepTime}
                           onChange={(event) =>
-                            setPrepTime(parseInt(event.target.value))
+                            setPrepTime(Number(event.target.value))
                           }
                         />
                       </Form.Field>
@@ -145,7 +145,7 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
                           type="number"
                           defaultValue={cookTime}
                           onChange={(event) =>
-                            setCookTime(parseInt(event.target.value))
+                            setCookTime(Number(event.target.value))
                           }
                         />
                       </Form.Field>
@@ -157,7 +157,7 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
                           type="number"
                           defaultValue={servings}
                           onChange={(event) =>
-                            setServings(parseInt(event.target.value))
+                            setServings(Number(event.target.value))
                           }
                         />
                       </Form.Field>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input, Grid, Button, Icon, Card, Transition } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
-import { getRecipes } from "../serviceCalls";
+import { getRecipes, searchRecipe } from "../serviceCalls";
 
 function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
   const [recipes, setRecipes] = useState([]);
@@ -27,7 +27,6 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
     setShouldRefresh(true);
     onSuccessfulDelete(recipe.recipename);
   }
-  
   return (
     <Grid padded>
       <Grid.Row columns="equal">
@@ -36,6 +35,11 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
             fluid
             placeholder="Search Recipe"
             icon={<Icon name="search" color='orange' inverted circular link />}
+            onKeyPress={async (event) => {
+              if(event.key === 'Enter') {
+                setRecipes([await searchRecipe(event.target.value)])}
+              }
+            }
           />
         </Grid.Column>
         <Grid.Column textAlign="right">

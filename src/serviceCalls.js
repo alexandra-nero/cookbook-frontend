@@ -30,3 +30,13 @@ export const deleteRecipe = async (recipeId) => {
     },
   });
 };
+
+export const searchRecipe = async (recipeName) => {
+
+  const response = await axios.post(endpoint + `/api/recipe/search`, {recipeName}, {
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+  return response.data
+}
