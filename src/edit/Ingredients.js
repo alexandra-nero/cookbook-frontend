@@ -11,7 +11,7 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
 
   function createIngredients() {
     let ingredientInputs = [
-      <Grid.Row columns="equal" >
+      <Grid.Row columns="equal" key="ingredient1">
         <Grid.Column width={4}>
           <Form.Field>
             <label>Amount</label>

@@ -21,8 +21,19 @@ code {
   color: white;
 }
 
-.menuStyle {
+.logoutTitleStyle {
+  font-size: small;
+  color: white;
+}
+
+.orangeMenuStyle {
   display: flex;
   margin: 0;
   background-color: #f2711c !important;
+}
+
+.blueMenuStyle {
+  display: flex;
+  margin: 0;
+  background-color: #7EABEF !important;
 }

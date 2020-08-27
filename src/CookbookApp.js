@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Icon, Menu, Loader } from "semantic-ui-react";
+import { Redirect } from 'react-router-dom'
+import { Button } from "semantic-ui-react";
 import ViewRecipes from "./view/ViewRecipes";
 import EditRecipe from "./edit/EditRecipe";
 import "./stylesheets/index.css";
 import MessageBar from "./MessageBar";
+import Header from "./Header"
 
-function CookbookApp() {
+function CookbookApp({ setAccessToken }) {
   const [showEditPage, setShowEditPage] = useState(false);
 
   const [creationSuccess, setCreationSuccess] = useState(false);
@@ -51,16 +53,7 @@ function CookbookApp() {
 
   return (
     <>
-      <Menu pointing secondary size="massive" className="menuStyle">
-        <Menu.Item
-          onClick={() => setShowEditPage(false)}>
-          <div
-            className="headerTitleStyle">
-            <Icon name="food" size="small" />
-            Cookbook
-          </div>
-        </Menu.Item>
-      </Menu>
+      <Header styleValue={"orangeMenuStyle"} setAccessToken={setAccessToken}/>
       <MessageBar
         creationSuccess={creationSuccess}
         newRecipeName={newRecipeName}
@@ -72,23 +65,23 @@ function CookbookApp() {
         editedRecipeName={editedRecipeName}
         setEditSuccess={setEditSuccess}
       />
-        {showEditPage ? (
-          <EditRecipe
-            onBackToMyRecipes={() => setShowEditPage(false)}
-            onSuccessfulCreate={(name) => handleCreateRecipe(name)}
-            onSuccessfulEdit={(name) => handleSuccessfulEditRecipe(name)}
-            inputtedRecipe={recipeToEdit}
+      {showEditPage ? (
+        <EditRecipe
+          onBackToMyRecipes={() => setShowEditPage(false)}
+          onSuccessfulCreate={(name) => handleCreateRecipe(name)}
+          onSuccessfulEdit={(name) => handleSuccessfulEditRecipe(name)}
+          inputtedRecipe={recipeToEdit}
+        />
+      ) : (
+          <ViewRecipes
+            onCreateRecipe={() => {
+              setShowEditPage(true);
+              setRecipeToEdit(defaultRecipe);
+            }}
+            onSuccessfulDelete={(name) => handleDeleteRecipe(name)}
+            onEditRecipe={handleSelectEditRecipe}
           />
-        ) : (
-            <ViewRecipes
-              onCreateRecipe={() => {
-                setShowEditPage(true);
-                setRecipeToEdit(defaultRecipe);
-              }}
-              onSuccessfulDelete={(name) => handleDeleteRecipe(name)}
-              onEditRecipe={handleSelectEditRecipe}
-            />
-          )}
+        )}
     </>
   );
 }

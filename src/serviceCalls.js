@@ -1,6 +1,16 @@
 import axios from "axios";
 
 let endpoint = "http://ec2-54-145-81-149.compute-1.amazonaws.com:8080";
+//let endpoint = "http://localhost:8080";
+
+export const login = async (username, password) => {
+  return await axios.post(endpoint + "/api/userToken",
+  {username, password}, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
 
 export const createRecipe = async (recipe) => {
   await axios.post(endpoint + "/api/recipe", recipe, {
@@ -32,7 +42,6 @@ export const deleteRecipe = async (recipeId) => {
 };
 
 export const searchRecipe = async (recipeName) => {
-
   const response = await axios.post(endpoint + `/api/recipe/search`, {recipeName}, {
     headers: {
       "Content-Type": "application/json"

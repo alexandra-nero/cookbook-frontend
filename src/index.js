@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './stylesheets/index.css';
-import CookbookApp from './CookbookApp';
+import App from './App';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <CookbookApp />
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );
