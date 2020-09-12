@@ -12,40 +12,76 @@ export const login = async (username, password) => {
   });
 }
 
-export const createRecipe = async (recipe) => {
-  await axios.post(endpoint + "/api/recipe", recipe, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+export const createRecipe = async (recipe, token) => {
+  let response;
+  try {
+    response = await axios.post(endpoint + "/api/recipe", recipe, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
 };
 
-export const getRecipes = async () =>{
-  const response = await axios.get(endpoint + "/api/recipes");
-  return response.data
-};
-
-export const updateRecipe = async (recipeId, recipe) => {
-  await axios.put(endpoint + `/api/recipe/${recipeId}`, recipe, {
+export const getRecipes = async (token) =>{
+  let response;
+  try {
+    response = await axios.get(endpoint + "/api/recipes", {
     headers: {
-      "Content-Type": "application/json",
-    },
-  });
-};
-
-export const deleteRecipe = async (recipeId) => {
-  await axios.delete(endpoint + `/api/recipe/${recipeId}`, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-};
-
-export const searchRecipe = async (recipeName) => {
-  const response = await axios.post(endpoint + `/api/recipe/search`, {recipeName}, {
-    headers: {
-      "Content-Type": "application/json"
+      "Authorization": `Bearer ${token}`,
     }
-  })
-  return response.data
+  });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+};
+
+export const updateRecipe = async (recipeId, recipe, token) => {
+  let response;
+  try {
+    response = await axios.put(endpoint + `/api/recipe/${recipeId}`, recipe, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+};
+
+export const deleteRecipe = async (recipeId, token) => {
+  let response;
+  try {
+    response = await axios.delete(endpoint + `/api/recipe/${recipeId}`, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+};
+
+export const searchRecipe = async (recipeName, token) => {
+  let response;
+  try {
+    response = await axios.post(endpoint + `/api/recipe/search`, {recipeName}, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      }
+    });
+  } catch(err) {
+    response = err.response
+  }
+  return response
 }

@@ -2,10 +2,18 @@ import React, { useState } from "react";
 import { List, Card, Grid, Icon, Loader } from "semantic-ui-react";
 import { deleteRecipe, updateRecipe } from "../serviceCalls";
 
-function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
+function RecipeCard({ 
+  token, 
+  currentUser, 
+  recipe, 
+  refreshRecipesAfterDelete, 
+  onEditRecipe,
+  onFailedDelete,
+ }) {
 
   const {
     recipeName,
+    userName,
     cookTime,
     prepTime,
     author,
@@ -24,8 +32,12 @@ function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
 
   const onDeleteRecipe = async () => {
     setRecipeLoading(true);
-    await deleteRecipe(recipeId);
-    refreshRecipesAfterDelete(recipe);
+    const response = await deleteRecipe(recipeId, token);
+    if (response.status === 204) {
+      refreshRecipesAfterDelete(recipe);
+    } else {
+      onFailedDelete()
+    }
     setRecipeLoading(false);
   }
 
@@ -33,8 +45,10 @@ function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
     const idValueArray = event.target.id.split('-');
     const submittedRating = Number(idValueArray[2]);
     const tempRecipe = { ...recipe, rating: submittedRating }
-    await updateRecipe(recipeId, tempRecipe);
-    setCurrentRating(submittedRating);
+    const response = await updateRecipe(recipeId, tempRecipe, token);
+    if (response.status === 200) {
+      setCurrentRating(submittedRating);
+    }
   }
 
   const createStars = () => {
@@ -182,17 +196,26 @@ function RecipeCard({ recipe, refreshRecipesAfterDelete, onEditRecipe }) {
           </Grid>
         }
       </Card.Content>
-      <Card.Content extra textAlign="right">
-        {!recipeLoading &&
-          (<><a onClick={() => onEditRecipe(recipe)} href="# ">
-            <Icon name="pencil" />
-            {`Edit\t`}
-          </a>
-            <a onClick={() => onDeleteRecipe(recipe)} href="# ">
-              <Icon name="trash" />
-            Delete
-          </a></>)
-        }
+      <Card.Content extra>
+        <Grid>
+          <Grid.Row>
+            <Grid.Column floated='left' textAlign='left' width={8}>
+              <>Submitted by {userName}</>
+            </Grid.Column>
+            <Grid.Column floated='right' textAlign='right' width={8}>
+              {(!recipeLoading && (userName === currentUser)) &&
+                (<><a onClick={() => onEditRecipe(recipe)} href="# ">
+                  <Icon name="pencil" />
+                  {`Edit\t`}
+                </a>
+                  <a onClick={() => onDeleteRecipe(recipe)} href="# ">
+                    <Icon name="trash" />
+                  Delete
+                </a></>)
+              }
+            </Grid.Column>
+          </Grid.Row>
+        </Grid>
       </Card.Content>
     </Card >
   );

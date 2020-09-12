@@ -4,7 +4,16 @@ import Steps from "./Steps";
 import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
 
-function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, inputtedRecipe }) {
+function EditRecipe({ 
+  token, 
+  currentUser, 
+  onBackToMyRecipes, 
+  onSuccessfulCreate, 
+  onSuccessfulEdit, 
+  onFailedCreate, 
+  onFailedEdit, 
+  inputtedRecipe 
+}) {
   const [recipeName, setRecipeName] = useState(inputtedRecipe.recipeName);
   const [author, setAuthor] = useState(inputtedRecipe.author);
   const [calories, setCalories] = useState(inputtedRecipe.calories);
@@ -35,6 +44,7 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
     const submittedReport = {
       ...inputtedRecipe,
       recipeName,
+      userName: currentUser,
       author,
       calories,
       cookTime,
@@ -45,11 +55,19 @@ function EditRecipe({ onBackToMyRecipes, onSuccessfulCreate, onSuccessfulEdit, i
     };
     setIsLoading(true);
     if (inputtedRecipe._id) {
-      await updateRecipe(inputtedRecipe._id, submittedReport);
-      onSuccessfulEdit(recipeName);
+      const response = await updateRecipe(inputtedRecipe._id, submittedReport, token);
+      if (response.status === 200) {
+        onSuccessfulEdit(recipeName);
+      } else {
+        onFailedEdit()
+      }
     } else {
-      await createRecipe(submittedReport);
-      onSuccessfulCreate(recipeName);
+      const response = await createRecipe(submittedReport, token);
+      if (response.status === 201) {
+        onSuccessfulCreate(recipeName);
+      } else {
+        onFailedCreate()
+      }
     }
   };
 

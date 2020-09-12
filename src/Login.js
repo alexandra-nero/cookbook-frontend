@@ -3,7 +3,7 @@ import { Card, Form, Button, Transition, Message } from "semantic-ui-react";
 import { login } from "./serviceCalls";
 import get from 'lodash';
 
-function Login({ setAccessToken }) {
+function Login({ setAccessToken, setCurrentUser}) {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState(false);
@@ -13,6 +13,7 @@ function Login({ setAccessToken }) {
       const response = await login(username, password);
       if (get(response, 'data.accessToken')) {
         setAccessToken(response.data.accessToken)
+        setCurrentUser(username)
         setError(false)
       } else {
         setError(true)

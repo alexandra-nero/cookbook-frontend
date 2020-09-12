@@ -6,6 +6,7 @@ import Login from "./Login";
 
 function App() {
   const [accessToken, setAccessToken] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
   return (
     <BrowserRouter>
       <Switch>
@@ -15,13 +16,18 @@ function App() {
               <><Route path="/login" exact>
                 <Login 
                   setAccessToken={setAccessToken}
+                  setCurrentUser={setCurrentUser}
                 />
               </Route>
                 <Redirect to="/login" /></>
             ) :
             (
               <><Route path="/cookbook" exact>
-                <CookbookApp setAccessToken={setAccessToken} />
+                <CookbookApp 
+                  token={accessToken}
+                  currentUser={currentUser} 
+                  setAccessToken={setAccessToken}
+                />
               </Route>
                 {/* TODO: Comment Back in when creating calorie logger */}
                 {/* <Route path="/calories" exact>
@@ -30,6 +36,7 @@ function App() {
                 <Route path="/login" exact>
                   <Login
                     setCredentials={setAccessToken}
+                    setCurrentUser={setCurrentUser}
                   />
                 </Route>
                 <Redirect to="/cookbook" /></>

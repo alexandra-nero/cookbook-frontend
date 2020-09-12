@@ -17,22 +17,22 @@ function MessageBar({
       <Transition visible={creationSuccess} animation="scale" duration={500}>
         <Message
           onDismiss={() => setCreationSuccess(false)}
-          header="Recipe created!"
-          content={`Recipe, "${newRecipeName}", has been added to the database`}
+          header="Success!"
+          content={`Recipe, "${newRecipeName}", has been created`}
         />
       </Transition>
       <Transition visible={deletionSuccess} animation="scale" duration={500}>
         <Message
           onDismiss={() => setDeletionSuccess(false)}
-          header="Recipe deleted!"
-          content={`Recipe, "${deletedRecipeName}", has been removed from the database`}
+          header="Success!"
+          content={`Recipe, "${deletedRecipeName}", has been deleted`}
         />
       </Transition>
       <Transition visible={editSuccess} animation="scale" duration={500}>
         <Message
           onDismiss={() => setEditSuccess(false)}
-          header="Recipe edited!"
-          content={`Recipe, "${editedRecipeName}", has been edited in the database`}
+          header="Success!"
+          content={`Recipe, "${editedRecipeName}", has been edited`}
         />
       </Transition>
     </>

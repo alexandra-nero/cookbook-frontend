@@ -3,10 +3,20 @@ import { Input, Grid, Button, Icon, Card, Transition, Loader } from "semantic-ui
 import RecipeCard from "./RecipeCard";
 import { getRecipes, searchRecipe } from "../serviceCalls";
 
-function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
+function ViewRecipes({ 
+  token, 
+  currentUser, 
+  onCreateRecipe, 
+  onSuccessfulDelete, 
+  onEditRecipe,
+  onFailedDelete, 
+  onFailedEdit, 
+}) {
   const [recipes, setRecipes] = useState([]);
+  const [searchField, setSearchField] = useState("");
   const [shouldRefresh, setShouldRefresh] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [errorState, setErrorState] = useState("")
 
   useEffect(() => {
     let isCurrent = true;
@@ -14,7 +24,15 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
       if (isCurrent) {
         if (shouldRefresh) {
           window.scrollTo(0, 0)
-          setRecipes(await getRecipes());
+          const response = await getRecipes(token);
+          if (response.status !== 200) {
+            setErrorState("Error Retrieving Recipes");
+            setRecipes([]);
+          } else {
+            setErrorState(false);
+            setRecipes(response.data);
+          }
+          setIsLoading(false);
         }
         setShouldRefresh(false);
       }
@@ -22,7 +40,7 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
     return () => {
       isCurrent = false
     }
-  }, [shouldRefresh]);
+  }, [shouldRefresh, token]);
 
 
   function refreshRecipesAfterDelete(recipe) {
@@ -30,11 +48,27 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
     onSuccessfulDelete(recipe.recipeName);
   }
 
-  async function submitSearch(event) {
+  function refreshAndClearError(){
+    setShouldRefresh(true);
+    setErrorState("");
+  }
+
+  async function submitSearch() {
+    setIsLoading(true);
+    const response = await searchRecipe(searchField, token);
+    if (response.status !== 200) {
+      setErrorState("Recipe Not Found");
+      setRecipes([]);
+    } else {
+      setErrorState("");
+      setRecipes([response.data]);
+    }
+    setIsLoading(false);
+  }
+
+  async function onInputChange(event) {
     if (event.key === 'Enter') {
-      setIsLoading(true);
-      setRecipes([await searchRecipe(event.target.value)]);
-      setIsLoading(false);
+      submitSearch();
     }
   }
 
@@ -45,8 +79,9 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
           <Input
             fluid
             placeholder="Search Recipe"
-            icon={<Icon name="search" color='orange' inverted circular link />}
-            onKeyPress={async (event) => await submitSearch(event)} />
+            icon={<Icon name="search" color='orange' inverted circular link onClick={() => submitSearch()} />}
+            onChange={(event) => setSearchField(event.target.value)}
+            onKeyPress={async (event) => await onInputChange(event)} />
         </Grid.Column>
         <Grid.Column textAlign="right">
           <Button color="orange" onClick={() => onCreateRecipe()}>
@@ -66,13 +101,19 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
               ></Icon>{"\tRefresh Recipes"}
             </p>) :
             (<p style={{ color: 'grey', cursor: 'pointer' }}
-              onClick={() => setShouldRefresh(true)}>
+              onClick={() => refreshAndClearError()}>
               <Icon
                 name="refresh"
                 color='grey'
               ></Icon>{"\tRefresh Recipes"}
             </p>
             )
+          }
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+        <Grid.Column>
+          {errorState !== ""  && <h1>{errorState}</h1>
           }
         </Grid.Column>
       </Grid.Row>
@@ -86,9 +127,13 @@ function ViewRecipes({ onCreateRecipe, onSuccessfulDelete, onEditRecipe }) {
               >
                 {recipes.map((r) => (
                   <RecipeCard
+                    token={token}
+                    currentUser={currentUser}
                     recipe={r}
                     refreshRecipesAfterDelete={refreshRecipesAfterDelete}
                     onEditRecipe={onEditRecipe}
+                    onFailedDelete={onFailedDelete}
+                    onFailedEdit={onFailedEdit}
                     key={"recipeCard" + r._id}
                   />
                 ))}
