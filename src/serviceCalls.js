@@ -1,7 +1,7 @@
 import axios from "axios";
 
-let endpoint = "http://ec2-54-145-81-149.compute-1.amazonaws.com:8080";
-//let endpoint = "http://localhost:8080";
+//let endpoint = "http://ec2-54-145-81-149.compute-1.amazonaws.com:8080";
+let endpoint = "http://localhost:8080";
 
 export const login = async (username, password) => {
   return await axios.post(endpoint + "/api/userToken",
@@ -27,10 +27,11 @@ export const createRecipe = async (recipe, token) => {
   return response
 };
 
-export const getRecipes = async (token) =>{
+export const getRecipes = async (paginatedRequest, token) =>{
   let response;
   try {
-    response = await axios.get(endpoint + "/api/recipes", {
+    response = await axios.post(endpoint + "/api/recipes", 
+    paginatedRequest, {
     headers: {
       "Authorization": `Bearer ${token}`,
     }

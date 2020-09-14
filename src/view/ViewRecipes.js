@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Input, Grid, Button, Icon, Card, Transition, Loader } from "semantic-ui-react";
+import React, { useEffect, useState, useRef } from "react";
+import { Input, Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
 import { getRecipes, searchRecipe } from "../serviceCalls";
 
@@ -13,10 +13,15 @@ function ViewRecipes({
   onFailedEdit, 
 }) {
   const [recipes, setRecipes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchField, setSearchField] = useState("");
   const [shouldRefresh, setShouldRefresh] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [disablePagination, setDisablePagination] = useState(false);
   const [errorState, setErrorState] = useState("")
+  
+  const totalNumberOfRecipes = useRef(null);
+  const PAGESIZE = 5;
 
   useEffect(() => {
     let isCurrent = true;
@@ -24,15 +29,20 @@ function ViewRecipes({
       if (isCurrent) {
         if (shouldRefresh) {
           window.scrollTo(0, 0)
-          const response = await getRecipes(token);
+          const response = await getRecipes({
+            pageSize: PAGESIZE,
+            pageCount: currentPage
+          }, token);
           if (response.status !== 200) {
             setErrorState("Error Retrieving Recipes");
             setRecipes([]);
           } else {
             setErrorState(false);
-            setRecipes(response.data);
+            setRecipes(response.data.recipes);
+            totalNumberOfRecipes.current = response.data.numberOfRecipes
           }
           setIsLoading(false);
+          setDisablePagination(false);
         }
         setShouldRefresh(false);
       }
@@ -40,7 +50,7 @@ function ViewRecipes({
     return () => {
       isCurrent = false
     }
-  }, [shouldRefresh, token]);
+  }, [shouldRefresh, token, currentPage]);
 
 
   function refreshRecipesAfterDelete(recipe) {
@@ -55,21 +65,33 @@ function ViewRecipes({
 
   async function submitSearch() {
     setIsLoading(true);
-    const response = await searchRecipe(searchField, token);
-    if (response.status !== 200) {
-      setErrorState("Recipe Not Found");
-      setRecipes([]);
+    if (searchField !== ""){
+      const response = await searchRecipe(searchField, token);
+      if (response.status !== 200) {
+        setErrorState("Recipe Not Found");
+        setRecipes([]);
+        totalNumberOfRecipes.current = 1
+      } else {
+        setErrorState("");
+        setRecipes(response.data);
+      }
+      totalNumberOfRecipes.current = 1
+      setIsLoading(false);
+      setDisablePagination(true);
     } else {
-      setErrorState("");
-      setRecipes([response.data]);
+      setShouldRefresh(true);
     }
-    setIsLoading(false);
   }
 
   async function onInputChange(event) {
     if (event.key === 'Enter') {
       submitSearch();
     }
+  }
+
+  async function switchPage(activePage){
+    setCurrentPage(activePage);
+    setShouldRefresh(true);
   }
 
   return (
@@ -91,7 +113,7 @@ function ViewRecipes({
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
-        <Grid.Column>
+        <Grid.Column width={8}>
           {isLoading || shouldRefresh ?
             (<p style={{ color: 'grey', cursor: 'pointer' }}>
               <Icon
@@ -140,6 +162,22 @@ function ViewRecipes({
               </Transition.Group>
             </Card.Group>
           }
+        </Grid.Column>
+      </Grid.Row>
+      <Grid.Row>
+      <Grid.Column>
+        <Pagination 
+          defaultActivePage={1} 
+          totalPages={Math.ceil(totalNumberOfRecipes.current/PAGESIZE) || 1} 
+          firstItem={null}
+          lastItem={null}
+          disabled={disablePagination}
+          pointing
+          secondary
+          value={currentPage}
+          onPageChange={(e, { activePage })=>switchPage(activePage)}
+          style={{marginBottom: '40px'}}
+        />
         </Grid.Column>
       </Grid.Row>
     </Grid>
