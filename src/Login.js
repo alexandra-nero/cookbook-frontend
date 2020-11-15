@@ -69,11 +69,7 @@ function Login({ setAccessToken, setCurrentUser}) {
                 autoComplete="current-password"
               />
             </Form.Field>
-            {isLoading ? (
-                <Form.Button color='orange'  type='submit' loading></Form.Button>
-              ) : (
-                  <Form.Button color='orange'  type='submit'>Submit</Form.Button>
-                )}
+            <Form.Button color='orange'  type='submit' loading={isLoading}>Submit</Form.Button>
           </Form>
         </Card.Content>
       </Card >

@@ -197,11 +197,7 @@ function EditRecipe({
               />
             </Card.Content>
             <Card.Content extra>
-              {isLoading ? (
-                <Form.Button color='orange' loading></Form.Button>
-              ) : (
-                  <Form.Button color='orange' onClick={() => submitRecipe()}>Submit</Form.Button>
-                )}
+              <Form.Button color='orange' loading={isLoading} onClick={() => submitRecipe()}>Submit</Form.Button>
             </Card.Content>
           </Card>
         </Grid.Column>

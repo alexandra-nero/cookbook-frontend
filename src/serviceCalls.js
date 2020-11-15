@@ -42,6 +42,21 @@ export const getRecipes = async (paginatedRequest, token) =>{
   return response
 };
 
+export const getRandomRecipes = async (token) =>{
+  let response;
+  try {
+    response = await axios.get(endpoint + "/api/randomRecipe/1",
+    {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      }
+  });
+  } catch(err) {
+    response = err.response
+  }
+  return response
+};
+
 export const updateRecipe = async (recipeId, recipe, token) => {
   let response;
   try {

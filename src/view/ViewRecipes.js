@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Input, Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
-import { getRecipes, searchRecipe } from "../serviceCalls";
+import { getRecipes, searchRecipe, getRandomRecipes } from "../serviceCalls";
 
 function ViewRecipes({ 
   token, 
@@ -16,11 +16,11 @@ function ViewRecipes({
   const [currentPage, setCurrentPage] = useState(1);
   const [searchField, setSearchField] = useState("");
   const [shouldRefresh, setShouldRefresh] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [disablePagination, setDisablePagination] = useState(false);
   const [errorState, setErrorState] = useState("")
+  const [numberOfRecipes, setNumberOfRecipes] = useState(0)
   
-  const totalNumberOfRecipes = useRef(null);
   const PAGESIZE = 5;
 
   useEffect(() => {
@@ -39,8 +39,8 @@ function ViewRecipes({
           } else {
             setErrorState(false);
             setRecipes(response.data.recipes);
-            totalNumberOfRecipes.current = response.data.numberOfRecipes
-          }
+            setNumberOfRecipes(response.data.numberOfRecipes);
+            }
           setIsLoading(false);
           setDisablePagination(false);
         }
@@ -55,6 +55,7 @@ function ViewRecipes({
 
   function refreshRecipesAfterDelete(recipe) {
     setShouldRefresh(true);
+    setIsLoading(true);
     onSuccessfulDelete(recipe.recipeName);
   }
 
@@ -68,19 +69,39 @@ function ViewRecipes({
     if (searchField !== ""){
       const response = await searchRecipe(searchField, token);
       if (response.status !== 200) {
-        setErrorState("Recipe Not Found");
+        setErrorState("Error Retrieving Recipes");
         setRecipes([]);
-        totalNumberOfRecipes.current = 1
+        setNumberOfRecipes(1);
+      } else if (!response.data.length) {
+        setErrorState("No Matching Recipes Found");
+        setNumberOfRecipes(1);
+        setRecipes(response.data);
       } else {
         setErrorState("");
         setRecipes(response.data);
       }
-      totalNumberOfRecipes.current = 1
+      setNumberOfRecipes(1)
       setIsLoading(false);
       setDisablePagination(true);
     } else {
       setShouldRefresh(true);
     }
+  }
+
+  async function generateRandomRecipes() {
+    setIsLoading(true);
+    const response = await getRandomRecipes(token);
+    if (response.status !== 200) {
+      setErrorState("Error Retrieving Recipes");
+      setRecipes([]);
+      setNumberOfRecipes(1)
+    } else {
+      setErrorState("");
+      setRecipes(response.data);
+    }
+    setNumberOfRecipes(1)
+    setIsLoading(false);
+    setDisablePagination(true);
   }
 
   async function onInputChange(event) {
@@ -114,23 +135,28 @@ function ViewRecipes({
       </Grid.Row>
       <Grid.Row>
         <Grid.Column width={8}>
-          {isLoading || shouldRefresh ?
-            (<p style={{ color: 'grey', cursor: 'pointer' }}>
-              <Icon
-                loading
-                color='grey'
-                name="spinner"
-              ></Icon>{"\tRefresh Recipes"}
-            </p>) :
-            (<p style={{ color: 'grey', cursor: 'pointer' }}
-              onClick={() => refreshAndClearError()}>
-              <Icon
-                name="refresh"
-                color='grey'
-              ></Icon>{"\tRefresh Recipes"}
-            </p>
-            )
-          }
+          <>
+            <Button
+              size='small'
+              compact
+              loading={isLoading || shouldRefresh}
+              basic
+              content='Refresh'
+              icon='refresh'
+              labelPosition='left'
+              onClick={() => refreshAndClearError()}
+            />
+            <Button
+              size='small'
+              compact
+              loading={isLoading || shouldRefresh}
+              basic
+              content='Random'
+              icon='random'
+              labelPosition='left'
+              onClick ={()=> generateRandomRecipes()}
+            />
+          </>
         </Grid.Column>
       </Grid.Row>
       <Grid.Row>
@@ -168,7 +194,7 @@ function ViewRecipes({
       <Grid.Column>
         <Pagination 
           defaultActivePage={1} 
-          totalPages={Math.ceil(totalNumberOfRecipes.current/PAGESIZE) || 1} 
+          totalPages={Math.ceil(numberOfRecipes/PAGESIZE) || 1} 
           firstItem={null}
           lastItem={null}
           disabled={disablePagination}

@@ -20,7 +20,7 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
   const [deletionError, setDeletionError] = useState(false);
   const [editError, setEditError] = useState(false);
 
-  const [recipeToEdit, setRecipeToEdit] = useState(defaultRecipe);
+  const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,7 +57,8 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
   }
 
   function handleCreateRecipe(recipeName) {
-    setRecipeToEdit(defaultRecipe);
+    defaultRecipe.ingredients = [{}];
+    setRecipeToEdit({...defaultRecipe});
     setNewRecipeName(recipeName);
     setCreationSuccess(true);
     setShowEditPage(false);
@@ -127,7 +128,7 @@ export default CookbookApp;
 
 export const defaultRecipe = {
   steps: [""],
-  ingredients: [{}],
+  ingredients: [{name:"", amount:0, measurement: ""}],
   recipename: "",
   servings: 0,
   author: "",
