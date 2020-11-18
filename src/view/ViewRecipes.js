@@ -31,7 +31,7 @@ function ViewRecipes({
           window.scrollTo(0, 0)
           const response = await getRecipes({
             pageSize: PAGESIZE,
-            pageCount: currentPage
+            pageCount: currentPage-1
           }, token);
           if (response.status !== 200) {
             setErrorState("Error Retrieving Recipes");
