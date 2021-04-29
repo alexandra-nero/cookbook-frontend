@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { List, Card, Grid, Icon, Loader } from "semantic-ui-react";
-import { deleteRecipe, updateRecipe } from "../serviceCalls";
+import { List, Card, Grid, Icon, Loader, Button } from "semantic-ui-react";
+import { deleteRecipe } from "../serviceCalls";
 
 function RecipeCard({ 
   token, 
@@ -22,13 +22,11 @@ function RecipeCard({
     ingredients,
     steps,
     servings,
-    rating
   } = recipe;
 
   const [stepsVisible, setStepsVisible] = useState(false)
   const [ingredientsVisible, setIngredientsVisible] = useState(false)
   const [recipeLoading, setRecipeLoading] = useState(false);
-  const [currentRating, setCurrentRating] = useState(rating)
 
   const onDeleteRecipe = async () => {
     setRecipeLoading(true);
@@ -39,42 +37,6 @@ function RecipeCard({
       onFailedDelete()
     }
     setRecipeLoading(false);
-  }
-
-  const onSelectStar = async (event) => {
-    const idValueArray = event.target.id.split('-');
-    const submittedRating = Number(idValueArray[2]);
-    const tempRecipe = { ...recipe, rating: submittedRating }
-    const response = await updateRecipe(recipeId, tempRecipe, token);
-    if (response.status === 200) {
-      setCurrentRating(submittedRating);
-    }
-  }
-
-  const createStars = () => {
-    const starInputs = [];
-    let currentStarNumber = 1;
-    for (let i = 0; i < currentRating; i++) {
-      starInputs.push(
-        <Icon
-          name="star"
-          color="orange"
-          key={"star" + i + recipeId}
-          id={`star-${recipeId}-${currentStarNumber++}`}
-          onClick={(event) => onSelectStar(event)}
-        />)
-    }
-    for (let i = 0; i < (5 - currentRating); i++) {
-      starInputs.push(
-        <Icon
-          name="star outline"
-          color="orange"
-          key={"empty star" + i + recipeId}
-          id={`star-${recipeId}-${currentStarNumber++}`}
-          onClick={(event) => onSelectStar(event)}
-        />)
-    }
-    return (starInputs);
   }
 
   const getIngredientEntry = (name, amount, measurement) => {
@@ -167,7 +129,19 @@ function RecipeCard({
             <Grid.Row columns="equal">
               <Grid.Column>{recipeName}</Grid.Column>
               <Grid.Column textAlign="right">
-                {createStars()}
+              {(!recipeLoading && (userName === currentUser)) &&
+                (<>
+                <Button size='mini' color='orange' basic
+                  onClick={() => onEditRecipe(recipe)}>
+                    <Icon name="pencil" />
+                    Edit
+                </Button>
+                <Button size='mini' color='orange' basic
+                  onClick={() => onDeleteRecipe(recipe)}>
+                    <Icon name="trash" />
+                    Delete
+                </Button></>)
+              }
               </Grid.Column>
             </Grid.Row>
           </Grid>
@@ -203,16 +177,6 @@ function RecipeCard({
               <>Submitted by {userName}</>
             </Grid.Column>
             <Grid.Column floated='right' textAlign='right' width={8}>
-              {(!recipeLoading && (userName === currentUser)) &&
-                (<><a onClick={() => onEditRecipe(recipe)} href="# ">
-                  <Icon name="pencil" />
-                  {`Edit\t`}
-                </a>
-                  <a onClick={() => onDeleteRecipe(recipe)} href="# ">
-                    <Icon name="trash" />
-                  Delete
-                </a></>)
-              }
             </Grid.Column>
           </Grid.Row>
         </Grid>
