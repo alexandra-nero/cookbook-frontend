@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Grid, Button, Icon, Card, Transition, Loader, Pagination } from "semantic-ui-react";
 import RecipeCard from "./RecipeCard";
 import { getRecipes, searchRecipe, getRandomRecipes } from "../serviceCalls";

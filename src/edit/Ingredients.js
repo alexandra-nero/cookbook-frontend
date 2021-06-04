@@ -61,12 +61,12 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
 
     for (let i = 1; i < currentIngredients.length; i++) {
       ingredientInputs.push(
-        <Grid.Row columns="equal" key={"steps" + i}>
+        <Grid.Row columns="equal" key={"ingredients" + i}>
           <Grid.Column width={4}>
             <Form.Field>
               <input
                 type="number"
-                defaultValue={currentIngredients[i].amount}
+                value={currentIngredients[i].amount || 0}
                 onChange={(event) =>
                   changeIngredientValue(i, "amount", parseFloat(event.target.value))
                 }
@@ -76,7 +76,7 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
           <Grid.Column width={4}>
             <Form.Field>
               <input
-                defaultValue={currentIngredients[i].measurement}
+                value={currentIngredients[i].measurement || ''}
                 onChange={(event) =>
                   changeIngredientValue(i, "measurement", event.target.value)
                 }
@@ -86,7 +86,7 @@ function Ingredients({ currentIngredients, setCurrentIngredients, onIngredientDe
           <Grid.Column width={6}>
             <Form.Field>
               <input
-                defaultValue={currentIngredients[i].name}
+                value={currentIngredients[i].name || ''}
                 onChange={(event) =>
                   changeIngredientValue(i, "name", event.target.value)
                 }
