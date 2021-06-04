@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { Switch, Route, Redirect, BrowserRouter } from 'react-router-dom'
 import CookbookApp from "./CookbookApp";
-//import CalorieLogApp from "./CalorieLogApp";
 import Login from "./Login";
 
 function App() {

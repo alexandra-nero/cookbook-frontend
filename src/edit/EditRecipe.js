@@ -1,18 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Form, Divider, Grid, Button, Card } from "semantic-ui-react";
 import Steps from "./Steps";
 import Ingredients from "./Ingredients";
 import { createRecipe, updateRecipe } from "../serviceCalls";
+import { MessageBarContext } from "../MessageBarContext";
 
 function EditRecipe({ 
   token, 
-  currentUser, 
-  onBackToMyRecipes, 
+  currentUser,
   onSuccessfulCreate, 
-  onSuccessfulEdit, 
-  onFailedCreate, 
-  onFailedEdit, 
-  inputtedRecipe 
+  inputtedRecipe,
+  setShowEditPage 
 }) {
   const [recipeName, setRecipeName] = useState(inputtedRecipe.recipeName);
   const [author, setAuthor] = useState(inputtedRecipe.author);
@@ -23,6 +21,8 @@ function EditRecipe({
   const [prepTime, setPrepTime] = useState(inputtedRecipe.prepTime);
   const [servings, setServings] = useState(inputtedRecipe.servings);
   const [isLoading, setIsLoading] = useState(false);
+  
+  const { dispatch } = useContext(MessageBarContext);
 
   const submitRecipe = async () => {
     const submittedSteps = [];
@@ -57,16 +57,20 @@ function EditRecipe({
     if (inputtedRecipe._id) {
       const response = await updateRecipe(inputtedRecipe._id, submittedReport, token);
       if (response.status === 200) {
-        onSuccessfulEdit(recipeName);
+        dispatch({ type: 'EDIT_SUCCESS', payload: { recipeName } });
+        setShowEditPage(false);
       } else {
-        onFailedEdit()
+        dispatch({ type: 'EDIT_FAILURE' });
+        setShowEditPage(false);
       }
     } else {
       const response = await createRecipe(submittedReport, token);
       if (response.status === 201) {
+        dispatch({ type: 'CREATE_SUCCESS', payload: { recipeName } });
         onSuccessfulCreate(recipeName);
       } else {
-        onFailedCreate()
+        dispatch({ type: 'CREATE_FAILURE' });
+        setShowEditPage(false);
       }
     }
   };
@@ -90,7 +94,7 @@ function EditRecipe({
           <h1> Edit Recipe</h1>
         </Grid.Column>
         <Grid.Column textAlign="right">
-          <Button basic color="orange" onClick={() => onBackToMyRecipes()}>
+          <Button basic color="orange" onClick={() => setShowEditPage(false)}>
             Back to My Recipes
           </Button>
         </Grid.Column>

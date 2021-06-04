@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { List, Card, Grid, Icon, Loader, Button } from "semantic-ui-react";
+import { MessageBarContext } from "../MessageBarContext";
 import { deleteRecipe } from "../serviceCalls";
 
 function RecipeCard({ 
@@ -8,7 +9,7 @@ function RecipeCard({
   recipe, 
   refreshRecipesAfterDelete, 
   onEditRecipe,
-  onFailedDelete,
+  onFailedDelete
  }) {
 
   const {
@@ -28,12 +29,16 @@ function RecipeCard({
   const [ingredientsVisible, setIngredientsVisible] = useState(false)
   const [recipeLoading, setRecipeLoading] = useState(false);
 
+  const { dispatch } = useContext(MessageBarContext);
+
   const onDeleteRecipe = async () => {
     setRecipeLoading(true);
     const response = await deleteRecipe(recipeId, token);
     if (response.status === 204) {
-      refreshRecipesAfterDelete(recipe);
+      dispatch({ type: 'DELETE_SUCCESS', payload: { recipeName: recipe.recipeName } });
+      refreshRecipesAfterDelete();
     } else {
+      dispatch({ type: 'DELETE_FAILURE' });
       onFailedDelete()
     }
     setRecipeLoading(false);
