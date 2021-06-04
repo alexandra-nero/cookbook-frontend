@@ -6,11 +6,8 @@ import { getRecipes, searchRecipe, getRandomRecipes } from "../serviceCalls";
 function ViewRecipes({ 
   token, 
   currentUser, 
-  onCreateRecipe, 
-  onSuccessfulDelete, 
+  onCreateRecipe,
   onEditRecipe,
-  onFailedDelete, 
-  onFailedEdit, 
 }) {
   const [recipes, setRecipes] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,10 +50,9 @@ function ViewRecipes({
   }, [shouldRefresh, token, currentPage]);
 
 
-  function refreshRecipesAfterDelete(recipe) {
+  function refreshRecipesAfterDelete() {
     setShouldRefresh(true);
     setIsLoading(true);
-    onSuccessfulDelete(recipe.recipeName);
   }
 
   function refreshAndClearError(){
@@ -180,8 +176,6 @@ function ViewRecipes({
                     recipe={r}
                     refreshRecipesAfterDelete={refreshRecipesAfterDelete}
                     onEditRecipe={onEditRecipe}
-                    onFailedDelete={onFailedDelete}
-                    onFailedEdit={onFailedEdit}
                     key={"recipeCard" + r._id}
                   />
                 ))}

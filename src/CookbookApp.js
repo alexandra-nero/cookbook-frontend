@@ -1,111 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import ViewRecipes from "./view/ViewRecipes";
 import EditRecipe from "./edit/EditRecipe";
 import "./stylesheets/index.css";
 import MessageBar from "./MessageBar";
-import Header from "./Header"
-import ErrorMessageBar from "./ErrorMessageBar";
+import Header from "./Header";
+import { MessageBarContext } from "./MessageBarContext";
+import { messageReducer } from "./reducers/messageReducer";
 
 function CookbookApp({ token, currentUser, setAccessToken }) {
   const [showEditPage, setShowEditPage] = useState(false);
-
-  const [creationSuccess, setCreationSuccess] = useState(false);
-  const [deletionSuccess, setDeletionSuccess] = useState(false);
-  const [editSuccess, setEditSuccess] = useState(false);
-  const [newRecipeName, setNewRecipeName] = useState("");
-  const [deletedRecipeName, setDeletedRecipeName] = useState("");
-  const [editedRecipeName, setEditedRecipeName] = useState("");
-  
-  const [creationError, setCreationError] = useState(false);
-  const [deletionError, setDeletionError] = useState(false);
-  const [editError, setEditError] = useState(false);
-
   const [recipeToEdit, setRecipeToEdit] = useState({...defaultRecipe});
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setEditSuccess(false);
-      setDeletionSuccess(false);
-      setCreationSuccess(false);
-    }, 7000);
-    return () => clearTimeout(timer);
-  }, [creationSuccess, deletionSuccess, editSuccess]);
+  const [state, dispatch] = useReducer(messageReducer, {});
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setEditError(false);
-      setDeletionError(false);
-      setCreationError(false);
-    }, 7000);
+      dispatch({type: 'CLEAR_MESSAGE'})
+    }, 5000);
     return () => clearTimeout(timer);
-  }, [creationError, deletionError, editError]);
+  }, [state]);
 
-  function handleSelectEditRecipe(recipe) {
-    setRecipeToEdit(recipe);
-    setShowEditPage(true);
-  }
-
-  function handleSuccessfulEditRecipe(recipeName) {
-    setEditedRecipeName(recipeName);
-    setEditSuccess(true);
-    setShowEditPage(false);
-  }
-
-  function onFailedEdit() {
-    setShowEditPage(false);
-    setEditError(true)
-  }
-
-  function handleCreateRecipe(recipeName) {
+  function handleCreateRecipe() {
     defaultRecipe.ingredients = [{}];
     setRecipeToEdit({...defaultRecipe});
-    setNewRecipeName(recipeName);
-    setCreationSuccess(true);
     setShowEditPage(false);
-  }
-
-  function onFailedCreate() {
-    setShowEditPage(false);
-    setCreationError(true);
-  }
-
-  function handleDeleteRecipe(recipeName) {
-    setDeletedRecipeName(recipeName);
-    setDeletionSuccess(true);
   }
 
   return (
-    <>
+    <MessageBarContext.Provider value={{state, dispatch}}>
       <Header styleValue={"orangeMenuStyle"} setAccessToken={setAccessToken}/>
-      <MessageBar
-        creationSuccess={creationSuccess}
-        newRecipeName={newRecipeName}
-        setCreationSuccess={setCreationSuccess}
-        deletionSuccess={deletionSuccess}
-        deletedRecipeName={deletedRecipeName}
-        setDeletionSuccess={setDeletionSuccess}
-        editSuccess={editSuccess}
-        editedRecipeName={editedRecipeName}
-        setEditSuccess={setEditSuccess}
-      />
-      <ErrorMessageBar 
-        creationError={creationError}
-        setCreationError={setCreationSuccess}
-        deletionError={deletionError}
-        setDeletionError={setDeletionError}
-        editError={editError}
-        setEditError={setEditError}
-      />
+      <MessageBar />
       {showEditPage ? (
         <EditRecipe
           token={token}
           currentUser={currentUser}
-          onBackToMyRecipes={() => setShowEditPage(false)}
-          onSuccessfulCreate={(name) => handleCreateRecipe(name)}
-          onSuccessfulEdit={(name) => handleSuccessfulEditRecipe(name)}
-          onFailedCreate={()=>onFailedCreate()}
-          onFailedEdit={()=>onFailedEdit()}
+          onSuccessfulCreate={handleCreateRecipe}
           inputtedRecipe={recipeToEdit}
+          setShowEditPage={setShowEditPage}
         />
       ) : (
           <ViewRecipes
@@ -115,13 +46,13 @@ function CookbookApp({ token, currentUser, setAccessToken }) {
               setShowEditPage(true);
               setRecipeToEdit(defaultRecipe);
             }}
-            onSuccessfulDelete={(name) => handleDeleteRecipe(name)}
-            onEditRecipe={handleSelectEditRecipe}
-            onFailedDelete={()=>setDeletionError(true)}
-            onFailedEdit={()=>onFailedEdit()}
+            onEditRecipe={(recipe) => {
+              setShowEditPage(true);
+              setRecipeToEdit(recipe);
+            }}
           />
         )}
-    </>
+    </MessageBarContext.Provider>
   );
 }
 export default CookbookApp;

@@ -1,41 +1,18 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Transition, Message } from "semantic-ui-react";
+import { MessageBarContext } from "./MessageBarContext";
 
-function MessageBar({ 
-  creationSuccess, 
-  newRecipeName, 
-  setCreationSuccess, 
-  deletionSuccess, 
-  deletedRecipeName, 
-  setDeletionSuccess, 
-  editSuccess, 
-  editedRecipeName, 
-  setEditSuccess 
-}) {
+function MessageBar() {
+  const { state, dispatch } = useContext(MessageBarContext);
+  const { header, messageContent } = state;
   return (
-    <>
-      <Transition visible={creationSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setCreationSuccess(false)}
-          header="Success!"
-          content={`Recipe, "${newRecipeName}", has been created`}
-        />
-      </Transition>
-      <Transition visible={deletionSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setDeletionSuccess(false)}
-          header="Success!"
-          content={`Recipe, "${deletedRecipeName}", has been deleted`}
-        />
-      </Transition>
-      <Transition visible={editSuccess} animation="scale" duration={500}>
-        <Message
-          onDismiss={() => setEditSuccess(false)}
-          header="Success!"
-          content={`Recipe, "${editedRecipeName}", has been edited`}
-        />
-      </Transition>
-    </>
+    <Transition visible={Boolean(messageContent)} animation="scale" duration={500}>
+      <Message
+        onDismiss={() => dispatch({type: 'CLEAR_MESSAGE'})}
+        header={header}
+        content={messageContent}
+      />
+    </Transition>
   );
 }
 
