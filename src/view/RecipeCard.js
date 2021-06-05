@@ -136,12 +136,12 @@ function RecipeCard({
               <Grid.Column textAlign="right">
               {(!recipeLoading && (userName === currentUser)) &&
                 (<>
-                <Button size='mini' color='orange' basic
+                <Button size='mini' color='orange' inverted
                   onClick={() => onEditRecipe(recipe)}>
                     <Icon name="pencil" />
                     Edit
                 </Button>
-                <Button size='mini' color='orange' basic
+                <Button size='mini' color='orange' inverted
                   onClick={() => onDeleteRecipe(recipe)}>
                     <Icon name="trash" />
                     Delete

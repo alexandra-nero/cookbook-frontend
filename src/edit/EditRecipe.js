@@ -94,7 +94,7 @@ function EditRecipe({
           <h1> Edit Recipe</h1>
         </Grid.Column>
         <Grid.Column textAlign="right">
-          <Button basic color="orange" onClick={() => setShowEditPage(false)}>
+          <Button inverted color="orange" onClick={() => setShowEditPage(false)}>
             Back to My Recipes
           </Button>
         </Grid.Column>
